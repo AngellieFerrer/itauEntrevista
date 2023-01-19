@@ -1,0 +1,68 @@
+service: aws-lambda-blog-crud
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  iamRoleStatements: 
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:319328984110:table/Blog-CRUD
+        - arn:aws:dynamodb:us-east-1:319328984110:table/Publish-CRUD
+        - arn:aws:dynamodb:us-east-1:319328984110:table/Registro-CRUD
+        - arn:aws:dynamodb:us-east-1:319328984110:table/Role-CRUD
+
+functions:
+  BlogDemo:
+    handler: /hello.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  createBlog:
+    handler: scr/addBlog.addBlog
+    events:
+      - httpApi:
+          path: /blog
+          method: post
+  getBlogs:
+    handler: scr/getBlogs.getBlogs
+    events:
+      - httpApi:
+          path: /blog
+          method: get
+  getBlog:
+    handler: scr/getBlog.getBlog
+    events:
+      - httpApi:
+          path: /blog/{id}
+          method: get
+  updateBlog:
+    handler: scr/updateBlog.updateBlog
+    events:
+      - httpApi:
+          path: /blog/{id}
+          method: put
+  deleteBlog:
+    handler: scr/deleteBlog.deleteBlog
+    events:
+      - httpApi:
+          path: /blog/{id}
+          method: delete
+
+resources:
+  Resources:
+    BlogCRUD:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Blog-CRUD
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
